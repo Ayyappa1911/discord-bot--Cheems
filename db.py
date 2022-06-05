@@ -29,15 +29,32 @@ class my_data_base:
 
   def delete(self,name,no):
     self.temp = self.conn.execute("SELECT name , matter from DB");
-    count = 0;
+    count = 0
     for self.row in self.temp:
       if(self.row[0]==name):
         count += 1
       if(self.row[0] == name and count == no):
         self.conn.execute("DELETE FROM DB WHERE name== %r AND matter== %r " %(name,self.row[1]));
-        break; 
-      self.conn.commit()
+        self.conn.commit()
+        return ("**"+self.row[1] +"**"+ "has been deleted successfully!")
+
+    return "\0"
    
   def clear(self,name):
     self.conn.execute("DELETE FROM DB WHERE name == %r" %(name));
     self.conn.commit()
+
+  def edit(self,name,no,msg):
+    self.temp = self.conn.execute("SELECT name , matter from DB");
+    count = 0
+    for self.row in self.temp:
+      if(self.row[0]==name):
+        count += 1
+      if(self.row[0] == name and count == no):
+        self.conn.execute("DELETE FROM DB WHERE name== %r AND matter== %r " %(name,self.row[1]));
+        self.conn.execute("INSERT INTO DB (NAME, MATTER) VALUES (%r,%r)" %(name,msg));
+        self.conn.commit()
+        return ("Item with given index has been edited in your list successfully!.")
+    
+    return "\0"
+    

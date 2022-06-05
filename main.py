@@ -23,7 +23,7 @@ class bot:
     self.mydb = my_data_base()
     #self.plot = poll()
 
-    self.instructions = ">>> Hola Guys,\nI am **Cheems**.The **~~helper~~ bot**\n\nBelow,I had listed the __**commands**__ which are helpful to operate me.\n\n\n```\nSimple short user Commands\n```\n**__$hey ,$hi , $hello__** these for are pinging me.\n\n**__$inspire__** for getting a Quote of inspiration.\n\n\n```\nTo-Do list Commands\n```\n**__$add_to_list__  [CONTENT] - ** for adding the _'CONTENT'_ to your TO-DO list.\n\n**__$show_my_list__ - ** for displaying your TO-DO list.\n\n**__$delete_from_list__  [no] - ** for deleting the item numbered _'no'_ from your TO-DO list.\n\n**__$clear_my_list__ - ** to empty your TO-DO list.\n ```\nNOTE :\n```\n_**Kindly try to avoid the usage of emoji's in the content of your TO-DO list**_. \n"
+    self.instructions = ">>> Hey there!,\nI am **Cheems**,the **~~helper~~ bot**\n\nHere is a list of __**commands**__ which are helpful to operate me.\n\n\n```\nSimple short user Commands\n```\n**__$hey, $hi, $hello__** these for are pinging me.\n\n**__$inspire__** for getting a Quote of inspiration.\n\n\n```\nTo-Do list Commands\n```\n**__$add__  [CONTENT] - ** for adding the _'CONTENT'_ to your TO-DO list.\n\n**__$show__ - ** for displaying your TO-DO list.\n\n**__$delete__  [no] - ** for deleting the item numbered _'no'_ from your TO-DO list.\n\n**__$clear__ - ** to empty your TO-DO list.\n ```\nNOTE :\n```\n_**Kindly try to avoid the usage of emoji's in the content of your TO-DO list**_. \n"
 
 
     @self.client.event
@@ -51,15 +51,16 @@ class bot:
         self.quote = self.get_quote() 
         await message.channel.send(self.quote)
 
-      if(message.content.startswith('$add_to_list')):
+      if(message.content.startswith('$add')):
         self.tempo = (message.content).split(" ")
         self.tempo = self.tempo[1:]
         self.mess = ""
         for parts in self.tempo:
           self.mess += parts + " "
         self.mydb.add(str(message.author),(self.mess))
+        await message.channel.send("**" + self.mess + "**" + " has been added to your list successfully!")
       
-      if(message.content.startswith('$show_my_list')):
+      if(message.content.startswith('$show')):
         self.temp_list = self.mydb.display(str(message.author))
         i = 1
         #await message.channel.send((self.temp_list))
@@ -69,16 +70,37 @@ class bot:
           i = i+1
         await message.channel.send("```json\n"+temp_message+"\n```")
       
-      if(message.content.startswith('$delete_from_list')):
+      if(message.content.startswith('$delete')):
         self.tempo = (message.content).split(" ")
         self.tempo = self.tempo[1:]
         no = int(str(self.tempo[0]))
+        
         if(no > 0):
-          #print(no+1)
-          self.mydb.delete(str(message.author),no)
+          msg = self.mydb.delete(str(message.author),no)
+          
+          if msg != "\0":
+            await message.channel.send(msg)
+          else:
+            await message.channel.send("Sorry! No such task with the given index exists in your list.")
+
+      if(message.content.startswith('$edit')):
+        no = (message.content).split(" ")
+        msgl = no[2:]
+        msg = ""
+        for i in msgl:
+          msg += i + " "
+        if(int(no[1]) > 0):
+          m = self.mydb.edit(str(message.author) ,int(no[1]),msg)
+
+          if m != "\0":
+            await message.channel.send(m)
+          else:
+            await message.channel.send("Sorry! No such task with the given index exists in your list.")
+            
       
-      if(message.content.startswith('$clear_my_list')):
+      if(message.content.startswith('$clear')):
         self.mydb.clear(str(message.author))
+        await message.channel.send("Your list has been cleared succesfully!")
 
       if(message.content.startswith('$ping me')): 
         smtp = smtplib.SMTP('smtp.gmail.com', 587)
@@ -88,9 +110,10 @@ class bot:
 
         msg = MIMEMultipart()
         msg['Subject'] = "Ping from Cheems"
-        msg.attach(MIMEText("Hi there,\n\tI am your cheems.The helper bot. Don't block me if this testing spam your mail box !!.")) 
-
-        to = ['SruthiKoppuravuri0103@gmail.com','ayyappakoppuravuri1908@gmail.com']
+        msg.attach(MIMEText("Hi there,\n\tI am your cheems, the helper bot. Please don't block me if this testing spams your mail box!! OwO.")) 
+        
+        
+        to = ['ayyappakoppuravuri1908@gmail.com', 'teja00219@gmail.com']
         smtp.sendmail(from_addr="cheems1911@gmail.com",to_addrs=to, msg=msg.as_string())
         smtp.close()
         
